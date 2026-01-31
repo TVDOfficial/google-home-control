@@ -7,16 +7,28 @@ from google.assistant.embedded.v1alpha2 import embedded_assistant_pb2
 from google.assistant.embedded.v1alpha2 import embedded_assistant_pb2_grpc
 import grpc
 
+# Force pure Python implementation for protobuf
 os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python run_assistant_text.py 'your command'")
+        print("Usage: python control.py 'your command'")
         return
 
     query = sys.argv[1]
     
-    creds_path = '/home/tvd/.config/google-oauthlib-tool/credentials.json'
+    # Check for credentials in standard locations
+    # 1. Environment variable GOG_HOME_CREDS
+    # 2. Local config folder ~/.config/google-oauthlib-tool/credentials.json
+    creds_path = os.environ.get('GOG_HOME_CREDS')
+    if not creds_path:
+        creds_path = os.path.expanduser('~/.config/google-oauthlib-tool/credentials.json')
+
+    if not os.path.exists(creds_path):
+        print(f"Error: Credentials not found at {creds_path}")
+        print("Please set GOG_HOME_CREDS environment variable or place credentials.json in ~/.config/google-oauthlib-tool/")
+        return
+
     with open(creds_path, 'r') as f:
         creds_data = json.load(f)
 
@@ -38,8 +50,8 @@ def main():
     config = embedded_assistant_pb2.AssistConfig(
         text_query=query,
         device_config=embedded_assistant_pb2.DeviceConfig(
-            device_id='openclaw_node_1',
-            device_model_id='openclaw_node_1_model'
+            device_id='openclaw_agent',
+            device_model_id='openclaw_agent_model'
         ),
     )
 
@@ -50,7 +62,6 @@ def main():
     def generate_requests():
         yield embedded_assistant_pb2.AssistRequest(config=config)
 
-    print(f"Executing command: {query}")
     responses = assistant.Assist(generate_requests(), metadata=[('authorization', 'Bearer ' + credentials.token)])
     
     try:
