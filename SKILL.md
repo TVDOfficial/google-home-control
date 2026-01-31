@@ -51,8 +51,8 @@ Ensure the `google_home_env` is accessible to Clawdbot. When Clawdbot runs the s
 ---
 
 ## 🚀 Usage
-Simply tell Clawdbot what to do:
-- "N.O.V.A., turn off the office lights."
-- "N.O.V.A., set the TV volume to 20."
+Simply tell the agent what to do:
+- "Turn off the office lights."
+- "Set the TV volume to 20."
 
-Clawdbot will use the `control.py` script inside this skill to execute the command via Google Assistant.
+The agent will use the `control.py` script inside this skill to execute the command via Google Assistant.
