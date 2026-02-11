@@ -1,4 +1,4 @@
-# Google Home Control (N.O.V.A.)
+# Google Home Control
 
 Control your smart home devices (lights, TV, etc.) via the Google Assistant SDK. This project provides a Python-based bridge that allows you to trigger home automation commands from the command line or through an agent like Clawdbot.
 
