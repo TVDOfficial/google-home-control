@@ -56,3 +56,28 @@ Simply tell the agent what to do:
 - "Set the TV volume to 20."
 
 The agent will use the `control.py` script inside this skill to execute the command via Google Assistant.
+
+---
+
+## ⚙️ Agent Invocation Pattern (Important)
+
+When calling this skill from an OpenClaw agent cron or `exec` tool, **do NOT use `source` to activate the venv** — OpenClaw's exec environment uses `/bin/sh` which doesn't support `source`.
+
+**Recommended — call venv Python directly:**
+```bash
+cd ~/.openclaw/workspace/skills/google-home-control && google_home_env/bin/python scripts/control.py "your command here"
+```
+
+The `control.py` script sets `PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python` internally, so no need to pass it as an environment variable.
+
+**Alternative — POSIX-compatible dot command:**
+```bash
+cd ~/.openclaw/workspace/skills/google-home-control && . google_home_env/bin/activate && python scripts/control.py "your command here"
+```
+
+**Alternative — force bash explicitly:**
+```bash
+bash -c "cd ~/.openclaw/workspace/skills/google-home-control && source google_home_env/bin/activate && python scripts/control.py 'your command here'"
+```
+
+> This issue was discovered in production: cron agents silently failed when using `source` because `/bin/sh` doesn't support it on many Linux systems.
